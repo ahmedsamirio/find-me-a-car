@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Ad
 
 # Create your views here.
 def home(request):
     return HttpResponse("<h1>Find Me A Car!</h1>")
 
-def input(request):
+def findbyprice(request):
     """View for user input"""
-    return HttpResponse("<h1>User input view</h1>")
+    # colors = Ad.objects.order_by('color').values_list('color', flat=True).distinct()  # not now
+    return render(request, 'curator/findbyprice.html')
 
-def result(request):
+def findbymodel(request):
     """View for results"""
-    return HttpResponse("<h1>Results</h1>")
+    return HttpResponse("<h1>Find Me  A Car by model</h1>")

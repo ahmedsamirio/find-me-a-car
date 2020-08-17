@@ -3,7 +3,9 @@ import re, requests, bs4, logging, threading, time, random
 import pandas as pd
 import numpy as np
 
+
 from .config import *
+from datetime import datetime
 from django.core.management.base import BaseCommand
 from curator.models import Ad
 
@@ -31,7 +33,9 @@ def get_info_from_id(id, full_info, full_info_ids):
 
 def get_car_features(full_info, full_info_ids):
     """ Returns a list containig all car features mentioned in the ad """
-    car_features = full_info[7:-3]  # the slice of the full info containing the ads
+    # find the features id index to remove things before it
+    cut_off = len(full_info_ids) - full_info_ids.index('إضافات') - 1
+    car_features = full_info[7:-cut_off]  # the slice of the full info containing the ads
 
     # since all car features are accounted for with only one id, we need to remove
     # these features and their counterpart id in order to be able to extract 
@@ -96,7 +100,7 @@ def process_arabic_date(date):
 def get_date(link_soup):
     try:
         date = re.sub('\t|\n', '', link_soup.select('p small span')[0].get_text()).split(',')[1]
-        return process_arabic_date(date)
+        return datetime.date(process_arabic_date(date))
     except:
         return 0
 
@@ -199,7 +203,7 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(1, 2, batch_count):
+        for batch in range(11, 13, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers1, headers2, 5, True)
 
         for ad_dict in all_ad_dicts:
@@ -223,6 +227,7 @@ class Command(BaseCommand):
                     )
                 print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
             except:
+                logging.critical(ad_dict["URL"])
                 print('%s - %s - %s already exists' % ((ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"])))
 
         self.stdout.write('job complete')

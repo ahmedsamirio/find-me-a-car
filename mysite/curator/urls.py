@@ -5,6 +5,6 @@ app_name = 'curator'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('inputs', views.input, name='input'),
-    path('results', views.result, name='result'),
+    path('price', views.findbyprice, name='price'),
+    path('model', views.findbymodel, name='model'),
 ]

@@ -1,0 +1,38 @@
+<head>
+	<title>Find By Price</title>
+</head>
+<body>
+	<h1>Find a car by specifiying a price range and some other information</h1>
+	<form>
+		<fieldset>
+			<legend>Text input</legend>
+			<p>
+				<label>Minimum Price</label>
+				<input type = "text"
+					   id = "min_price"/>
+			</p>
+			<p>
+				<label>Maximum Price</label>
+				<input type = "text"
+					    id = "max_price"/>
+			</p>
+		</fieldset>
+		<!-- <fieldset>
+			<p>
+				<input type= "checkbox"
+					   id = "all"
+					   name = "all"
+					   value = "all"/>
+				<label>All</label>
+			{% for color in colors %}
+			<p>
+				<input type="checkbox"
+				       id = "{{ color }}"
+				       name = "{{ color }}"
+				       value = "{{ color }}"/>
+				<label for = "{{ color }}">{{ color }}</label>
+			</p>
+			{% endfor %} -->
+		</fieldset>
+	</form>
+</body>
