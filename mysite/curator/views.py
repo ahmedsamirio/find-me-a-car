@@ -45,12 +45,11 @@ def price_results(request):
 def model(request):
     """View for results"""
     if request.method == "GET":
-        query = eval(request.GET["query"])
-    print(type(query))
-    queried_ads = Ad.objects.filter(brand=query['brand']).\
-                               filter(model=query['model']).\
-                               filter(year=query['year']) 
-    model = "{}-{}-{}".format(query['brand'], query['model'], query['year'])# stitch up model name to pass to the template  
+        data = request.GET.copy()
+    queried_ads = Ad.objects.filter(brand=data['brand']).\
+                               filter(model=data['model']).\
+                               filter(year=data['year']) 
+    model = "{}-{}-{}".format(data['brand'], data['model'], data['year'])# stitch up model name to pass to the template  
 
     # TODO: find the best ads in a given model query and pass them to the template for rendering
     return render(request, 'curator/model.html', {'queried_ads': queried_ads,

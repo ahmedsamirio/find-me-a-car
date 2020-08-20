@@ -1,7 +1,7 @@
 <body>
 	<ul>
 	{% for query in queried_models %}
-		<li><a href="{% url 'curator:model' %}?query={{ query|urlencode }}">{{ query.brand }}-{{ query.model }}-{{ query.year }}</a></li>
+		<li><a href="{% url 'curator:model' %}?brand={{ query.brand|urlencode }}&model={{ query.model|urlencode }}&year={{ query.year|urlencode }}">{{ query.brand }}-{{ query.model }}-{{ query.year }}</a></li>
 	{% endfor %}
 	</ul>
 </body>
