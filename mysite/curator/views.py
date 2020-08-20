@@ -6,6 +6,7 @@ from .models import Ad
 from .forms import PriceForm
 
 import pandas as pd
+import json
 
 # Create your views here.
 def home(request):
@@ -34,11 +35,23 @@ def price_results(request):
                                         annotate(mean_price=Avg('price')).\
                                         filter(mean_price__gte=min_price).\
                                         filter(mean_price__lte=max_price) 
-    return render(request, 'curator/results.html', {'min_price':min_price,
-                                                    'max_price':max_price})
+
+    # TODO: send the queried_models table to the html file
+    return render(request, 'curator/results.html', {'queried_models':queried_models,
+                                                    })
         
 
 
-def findbymodel(request):
+def model(request):
     """View for results"""
-    return HttpResponse("<h1>Find Me  A Car by model</h1>")
+    if request.method == "GET":
+        query = eval(request.GET["query"])
+    print(type(query))
+    queried_ads = Ad.objects.filter(brand=query['brand']).\
+                               filter(model=query['model']).\
+                               filter(year=query['year']) 
+    model = "{}-{}-{}".format(query['brand'], query['model'], query['year'])# stitch up model name to pass to the template  
+
+    # TODO: find the best ads in a given model query and pass them to the template for rendering
+    return render(request, 'curator/model.html', {'queried_ads': queried_ads,
+                                                  'model': model})

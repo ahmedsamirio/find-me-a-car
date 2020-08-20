@@ -1,1 +1,7 @@
-<h1>{{ min_price }} - {{ max_price }}</h1>
+<body>
+	<ul>
+	{% for query in queried_models %}
+		<li><a href="{% url 'curator:model' %}?query={{ query|urlencode }}">{{ query.brand }}-{{ query.model }}-{{ query.year }}</a></li>
+	{% endfor %}
+	</ul>
+</body>
