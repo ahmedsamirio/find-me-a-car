@@ -198,6 +198,8 @@ def scrape_pages(startPage, endPage, max_retries, headers1, headers2, max_thread
         thread.join()
 
 
+# TODO:
+#   1. Scrape only for sale ads that have cash or exchange values
 
 class Command(BaseCommand):
     help = "collect ads"

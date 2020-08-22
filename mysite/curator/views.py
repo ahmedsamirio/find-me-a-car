@@ -46,9 +46,10 @@ def model(request):
     """View for results"""
     if request.method == "GET":
         data = request.GET.copy()
-    queried_ads = Ad.objects.filter(brand=data['brand']).\
+    query = str(Ad.objects.filter(brand=data['brand']).\
                                filter(model=data['model']).\
-                               filter(year=data['year']) 
+                               filter(year=data['year']).query) 
+    queried_ads = pd.read_sql_query(query, connection)
     model = "{}-{}-{}".format(data['brand'], data['model'], data['year'])# stitch up model name to pass to the template  
 
     # TODO: find the best ads in a given model query and pass them to the template for rendering
