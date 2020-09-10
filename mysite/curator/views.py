@@ -5,6 +5,10 @@ from django.db.models import Avg
 from .models import Ad
 from .forms import PriceForm
 
+from sklearn.metrics.pairwise import cosine_similarity
+
+from .preprocessing import score_queried_ads
+
 import pandas as pd
 import json
 
@@ -39,18 +43,29 @@ def price_results(request):
     # TODO: send the queried_models table to the html file
     return render(request, 'curator/results.html', {'queried_models':queried_models,
                                                     })
-        
+
 
 
 def model(request):
     """View for results"""
     if request.method == "GET":
         data = request.GET.copy()
-    query = str(Ad.objects.filter(brand=data['brand']).\
-                               filter(model=data['model']).\
-                               filter(year=data['year']).query) 
+
+    query = str(Ad.objects.all().query)
     queried_ads = pd.read_sql_query(query, connection)
+
+    queried_ads.drop_duplicates(inplace=True)
+
+    mask = (queried_ads.brand == data["brand"]) & (queried_ads.model == data["model"]) & (queried_ads.year == int(data["year"]))
+    queried_ads = queried_ads[mask]
+
     model = "{}-{}-{}".format(data['brand'], data['model'], data['year'])# stitch up model name to pass to the template  
+
+    sorted_indices = score_queried_ads(queried_ads)
+    queried_ads = queried_ads.iloc[sorted_indices]
+
+    for _, row in queried_ads.iterrows():
+        print(row)
 
     # TODO: find the best ads in a given model query and pass them to the template for rendering
     return render(request, 'curator/model.html', {'queried_ads': queried_ads,

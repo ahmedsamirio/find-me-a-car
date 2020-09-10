@@ -58,9 +58,10 @@ def save_kilometers_index(df):
     df.kilos = df.kilos.apply(lambda x: replace_arabic(x))
     kilometers = df.kilos.unique()
     sorted_kilometers = sorted(kilometers, key=lambda x: int(x.split()[-1]))
+    sorted_kilometers_dict = {kilometers: i+1 for i, kilometers in enumerate(sorted_kilometers)}
     path = os.path.join(pickles_dir, 'kilometers_index.pkl')
     file = open(path, 'wb')
-    pickle.dump(sorted_kilometers, file)
+    pickle.dump(sorted_kilometers_dict, file)
 
 
 def replace_arabic(text):
@@ -88,7 +89,6 @@ class Command(BaseCommand):
         specs = save_specs()
         save_features_index()
         save_kilometers_index(df)
-        save_specs_encoder(df, specs)
 
         self.stdout.write('Saved pickles')
 

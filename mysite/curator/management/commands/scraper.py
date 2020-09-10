@@ -55,27 +55,27 @@ def make_ad_dict(link_soup, link):
     ad_dict['Date'] = get_date(link_soup)
     ad_dict['Price'] = get_price(link_soup)
     ad_dict['imgs'] = get_imgs(link_soup)
-    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup)
+    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup).strip()
     ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
     ad_dict['URL'] = link['href']
 
     ad_info = get_full_ad_info(link_soup)
     ad_info_ids = get_full_ad_info_ids(link_soup)
 
-    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids)
-    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids)
-    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids)
-    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids)
-    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids)
-    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids)
-    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids)
+    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids).strip()
+    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids).strip()
+    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids).strip()
+    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids).strip()
+    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids).strip()
+    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids).strip()
+    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids).strip()
 
     if 'إضافات' in ad_info_ids:
         ad_dict['Features'] = get_car_features(ad_info, ad_info_ids)
 
-    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids)
-    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids)
-    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids)
+    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids).strip()
+    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids).strip()
+    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids).strip()
 
     # print("Finished ad dict")
     return ad_dict
@@ -130,7 +130,7 @@ def get_price(link_soup):
     return price
 
 def get_brand(link_soup, city): 
-    brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '')
+    brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '').strip()
     return brand
 
 

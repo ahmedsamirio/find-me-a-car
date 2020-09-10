@@ -1,6 +1,8 @@
 <body>
 	<h1> Best ads for {{ model }} </h1>
-	{% for ad in queried_ads %}
-		# TODO: represent the best ads for a given model
+	<ul>
+	{% for ad in queried_ads.itertuples %}
+		<li> {{ad.url}} - {{ ad.price }} </li>
 	{% endfor %}
+	</ul>
 </body>
