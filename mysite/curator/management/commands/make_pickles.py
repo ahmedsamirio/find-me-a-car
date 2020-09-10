@@ -47,20 +47,11 @@ def save_features_index():
 
 
 def save_specs():
-    specs = ['transmission', 'cc']
+    specs = ['transmission']
     path = os.path.join(pickles_dir, 'specs.pkl')
     file = open(path, 'wb')
     pickle.dump(specs, file)
     return specs
-
-
-def save_specs_encoder(df, specs):
-    df.dropna(how='any', subset=specs, inplace=True)
-    encoder = OneHotEncoder(sparse=False)
-    encoder.fit(df[specs])
-    path = os.path.join(pickles_dir, 'specs_encoder.pkl')
-    file = open(path, 'wb')
-    pickle.dump(encoder, file)
 
 
 def save_kilometers_index(df):
