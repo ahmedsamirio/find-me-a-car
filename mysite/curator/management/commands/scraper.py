@@ -12,7 +12,7 @@ from curator.models import Ad
 
 def get_full_ad_info(link_soup):
     """ Returns the full ad infomation in a readable format """
-    full_raw_info = link_soup.select('strong a')  # full ad information in soupified html format
+    full_raw_info = link_soup.select('.details strong a')  # full ad information in soupified html format
     full_processed_info = []
     for info in full_raw_info:
         processed_info = re.sub('\t|\n', '', info.get_text())
@@ -108,17 +108,24 @@ def get_imgs(link_soup):
     return imgs
 
 
+def get_text_description(link_soup):
+    description = link_soup.select("#textContent p")[0].get_text().strip()
+    return description
+
+
 def make_ad_dict(link_soup, link):
     """ Returns a dictionary with all the relevant ad info """
     
     ad_dict = dict.fromkeys(['Brand', 'Model', 'Governerate', 'City', 'Date', 'Year', 'Kilometers', 'Pay_type',
-                         'Ad_type','Transmission', 'CC', 'Chasis', 'Features', 'Color', 'Price', 'URL', 'imgs'])
+                         'Ad_type','Transmission', 'CC', 'Chasis', 'Features', 'Color', 'Price', 'URL', 'imgs', 
+                         'Description'])
 
     ad_dict['Date'] = get_date(link_soup)
     ad_dict['Price'] = get_price(link_soup)
     ad_dict['imgs'] = get_imgs(link_soup)
     ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup) 
     ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
+    ad_dict['Description'] = get_text_description(link_soup)
     ad_dict['URL'] = link['href']
 
     ad_info = get_full_ad_info(link_soup)
