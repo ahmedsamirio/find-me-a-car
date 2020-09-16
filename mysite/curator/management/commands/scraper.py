@@ -144,7 +144,11 @@ def make_ad_dict(link_soup, link):
 
     ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids) 
     ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids) 
-    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids) 
+    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids)
+
+    # impute ads which didn't have ad_type
+    if not ad_dict['Ad_type']:
+        ad_dict['Ad_type'] = "معروض للبيع"
 
 
     # print("Finished ad dict")
@@ -232,6 +236,8 @@ class Command(BaseCommand):
                         color=ad_dict["Color"],
                         price=ad_dict["Price"],
                         url=ad_dict["URL"],
+                        description=ad_dict["Description"],
+                        img_urls= ad_dict["imgs"]
                         )
                     print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
                 except:
