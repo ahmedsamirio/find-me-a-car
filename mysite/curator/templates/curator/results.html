@@ -1,4 +1,20 @@
+<!DOCTYPE html>
+<head>
+	<style type="text/css">
+		li {
+			list-style: none;
+			text-align: center;
+			margin: 10px;
+			padding: 10px;
+			border: solid;
+		}
+	</style>
+	<title>
+		Result models
+	</title>
+</head>
 <body>
+	<h1>Results:</h1>
 	<ul>
 	{% for query in queried_models %}
 		<li><a href="{% url 'curator:model' %}?brand={{ query.brand|urlencode }}&model={{ query.model|urlencode }}&year={{ query.year|urlencode }}">{{ query.brand }}-{{ query.model }}-{{ query.year }}</a></li>

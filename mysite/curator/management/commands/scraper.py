@@ -55,27 +55,27 @@ def make_ad_dict(link_soup, link):
     ad_dict['Date'] = get_date(link_soup)
     ad_dict['Price'] = get_price(link_soup)
     ad_dict['imgs'] = get_imgs(link_soup)
-    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup).strip()
+    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup) 
     ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
     ad_dict['URL'] = link['href']
 
     ad_info = get_full_ad_info(link_soup)
     ad_info_ids = get_full_ad_info_ids(link_soup)
 
-    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids).strip()
-    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids).strip()
-    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids).strip()
-    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids).strip()
-    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids).strip()
-    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids).strip()
-    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids).strip()
+    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids) 
+    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids) 
+    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids) 
+    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids) 
+    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids) 
+    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids) 
+    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids) 
 
     if 'إضافات' in ad_info_ids:
         ad_dict['Features'] = get_car_features(ad_info, ad_info_ids)
 
-    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids).strip()
-    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids).strip()
-    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids).strip()
+    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids) 
+    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids) 
+    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids) 
 
     # print("Finished ad dict")
     return ad_dict
@@ -130,7 +130,7 @@ def get_price(link_soup):
     return price
 
 def get_brand(link_soup, city): 
-    brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '').strip()
+    brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '') 
     return brand
 
 
@@ -170,23 +170,21 @@ def scrape_ad(link, headers, sem, sleep=False):
     sem.release()
     
     
-def scrape_pages(startPage, endPage, max_retries, headers1, headers2, max_threads, ad_sleep=False):
+def scrape_pages(startPage, endPage, max_retries, headers, max_threads, ad_sleep=False):
     global n_pages
     global n_cars
     
     scraping_threads = []
     for page in range(startPage, endPage):
-        
         url = 'https://www.olx.com.eg/vehicles/cars-for-sale/?page={}'.format(page)
-        headers = random.choice([headers1, headers2])
         page_res = get_res(url, max_retries, headers)
+        print("got page {} res".format(page))
 
         page_soup = bs4.BeautifulSoup(page_res.text, features="lxml")
         page_links = page_soup.select('.ads__item__ad--title')
         
         sem = threading.Semaphore(max_threads)
         for i, link in enumerate(page_links):
-            headers = random.choice([headers1, headers2])
             scraping_thread = threading.Thread(target=scrape_ad, args=[link, headers, sem, ad_sleep])
             scraping_threads.append(scraping_thread)
             scraping_thread.start()
@@ -197,7 +195,6 @@ def scrape_pages(startPage, endPage, max_retries, headers1, headers2, max_thread
     for i, thread in enumerate(scraping_threads):
         thread.join()
 
-
 # TODO:
 #   1. Scrape only for sale ads that have cash or exchange values
 
@@ -205,27 +202,27 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(11, 13, batch_count):
+        for batch in range(1, 501, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers1, headers2, 5, True)
 
         for ad_dict in all_ad_dicts:
             try:
                 Ad.objects.create(
-                    brand=ad_dict["Brand"],
-                    model=ad_dict["Model"],
-                    gov=ad_dict["Governerate"],
-                    city=ad_dict["City"],
-                    date=ad_dict["Date"],
-                    year=ad_dict["Year"],
-                    kilos=ad_dict["Kilometers"],
-                    pay_type=ad_dict["Pay_type"],
-                    transmission=ad_dict["Transmission"],
-                    cc=ad_dict["CC"],
-                    chasis=ad_dict["Chasis"],
-                    features=ad_dict["Features"],
-                    color=ad_dict["Color"],
-                    price=ad_dict["Price"],
-                    url=ad_dict["URL"]
+                    brand=ad_dict["Brand"].strip(),
+                    model=ad_dict["Model"].strip(),
+                    gov=ad_dict["Governerate"].strip(),
+                    city=ad_dict["City"].strip(),
+                    date=ad_dict["Date"].strip(),
+                    year=ad_dict["Year"].strip(),
+                    kilos=ad_dict["Kilometers"].strip(),
+                    pay_type=ad_dict["Pay_type"].strip(),
+                    transmission=ad_dict["Transmission"].strip(),
+                    cc=ad_dict["CC"].strip(),
+                    chasis=ad_dict["Chasis"].strip(),
+                    features=ad_dict["Features"].strip(),
+                    color=ad_dict["Color"].strip(),
+                    price=ad_dict["Price"].strip(),
+                    url=ad_dict["URL"].strip(),
                     )
                 print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
             except:

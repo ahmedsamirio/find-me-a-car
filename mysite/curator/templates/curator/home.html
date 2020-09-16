@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		body {
+			background: #e5e7ee;
+		}
+
+		h1 { 
+			flex-grow: 1;
+			padding-top: 20px;
+			text-align: right;
+		}
+
+		p {
+			flex-grow: 1;
+			text-align: center;
+			margin: 5px;
+			padding: 5px;
+			/*border: solid;*/
+		}
+
+		p a {
+			text-decoration: none;
+		}
+
+
+
+		.container {
+			border: 2px dotted black;
+			margin: 2px;
+			display: flex;
+		}
+
+		.space {
+			height: 150px;
+		}
+
+		#header {
+			margin: 20px;
+			margin-left: 5px;
+			padding-top: 30px;
+			text-align: left;
+			border-left: solid 1px;
+		}
+
+		#price-description {
+			width: 480px;
+		}
+
+		#model-description {
+			flex-grow: 1;
+		}
+
+	</style>
+	<title>Home Page</title>
+</head>
+<body>
+	<div class="space">
+
+	</div>
+	<div class="container">
+		<h1>Find Me a Car</h1>
+		<p id="header">Get the best deals from multiple websites without the sifting through every page</p>
+	</div>
+
+	<div class="container">
+		<p><a href="{% url 'curator:price' %}">Find by price</a></p>
+		<p>Find by model</p>
+	</div>
+	<div class="container">
+		<p id="price-description">Searches for all cars in a price range that you specify, then opts you to select any car model in that price range to show you the best deals you can have.</p>
+		<p id="model-description">Searches for the best deals for a car model that you specify.</p>
+	</div>
+</body>
+</html>

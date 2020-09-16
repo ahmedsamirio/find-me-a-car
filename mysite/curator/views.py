@@ -14,7 +14,7 @@ import json
 
 # Create your views here.
 def home(request):
-    return HttpResponse("<h1>Find Me A Car!</h1>")
+    return render(request, 'curator/home.html')
 
 def findbyprice(request):
     """View for user input"""
