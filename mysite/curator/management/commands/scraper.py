@@ -29,7 +29,7 @@ def get_info_from_id(id, full_info, full_info_ids):
     """ Return a single ad info by specifing it's id counterpart """
     if id in full_info_ids:
         info_idx = full_info_ids.index(id)  # get the id index to return its info counterpart
-        return full_info[info_idx].strip()  # normalize text by stripping excess whitespace
+        return full_info[info_idx].strip()  # normalize text by stipping excess whitepsace
 
 def get_car_features(full_info, full_info_ids):
     """ Returns a list containig all car features mentioned in the ad """
@@ -97,7 +97,7 @@ def get_price(link_soup):
 
 def get_brand(link_soup, city): 
     brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '') 
-    return brand
+    return brand.strip()  # normalize text by stripping excess whitepsace
 
 
 def get_imgs(link_soup):
@@ -198,42 +198,41 @@ def scrape_pages(startPage, endPage, max_retries, headers, max_threads, ad_sleep
     for i, thread in enumerate(scraping_threads):
         thread.join()
 
-# TODO:
-#   1. Scrape only for sale ads that have cash or exchange values
 
 class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(1, 2, batch_count):
+        for batch in range(1, 10, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
 
         for ad_dict in all_ad_dicts:
-            try:
-                Ad.objects.create(
-                    brand=ad_dict["Brand"],
-                    model=ad_dict["Model"],
-                    gov=ad_dict["Governerate"],
-                    city=ad_dict["City"],
-                    date=ad_dict["Date"],
-                    year=ad_dict["Year"],
-                    kilos=ad_dict["Kilometers"],
-                    pay_type=ad_dict["Pay_type"],
-                    transmission=ad_dict["Transmission"],
-                    cc=ad_dict["CC"],
-                    chasis=ad_dict["Chasis"],
-                    features=ad_dict["Features"],
-                    color=ad_dict["Color"],
-                    price=ad_dict["Price"],
-                    url=ad_dict["URL"],
-                    )
-                print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
-            except:
-                logging.critical(ad_dict["URL"])
-                for info in ad_dict:
-                    logging.critical(info)
-                    logging.critical(ad_dict[info])
-                    logging.critical(type(ad_dict[info]))
-                print('%s - %s - %s already exists' % ((ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"])))
+            if ad_dict["Ad_type"] == "معروض للبيع":
+                try:
+                    Ad.objects.create(
+                        brand=ad_dict["Brand"],
+                        model=ad_dict["Model"],
+                        gov=ad_dict["Governerate"],
+                        city=ad_dict["City"],
+                        date=ad_dict["Date"],
+                        year=ad_dict["Year"],
+                        kilos=ad_dict["Kilometers"],
+                        pay_type=ad_dict["Pay_type"],
+                        transmission=ad_dict["Transmission"],
+                        cc=ad_dict["CC"],
+                        chasis=ad_dict["Chasis"],
+                        features=ad_dict["Features"],
+                        color=ad_dict["Color"],
+                        price=ad_dict["Price"],
+                        url=ad_dict["URL"],
+                        )
+                    print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
+                except:
+                    for info in ad_dict:
+                        logging.critical(info)
+                        logging.critical(ad_dict[info])
+                        logging.critical(type(ad_dict[info]))
+                    print("%s - %s - %s couldn't be added" % ((ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"])))
+                    logging.critical(ad_dict["URL"])
 
         self.stdout.write('job complete')
