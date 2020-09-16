@@ -207,7 +207,7 @@ class Command(BaseCommand):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
 
         for ad_dict in all_ad_dicts:
-            if ad_dict["Ad_type"] == "معروض للبيع":
+            if ad_dict["Ad_type"] == "معروض للبيع" and ad_dict["Pay_type"] in ["كاش", "قابل للبدل"]:
                 try:
                     Ad.objects.create(
                         brand=ad_dict["Brand"],
