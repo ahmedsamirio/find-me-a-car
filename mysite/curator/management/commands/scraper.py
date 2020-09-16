@@ -29,7 +29,7 @@ def get_info_from_id(id, full_info, full_info_ids):
     """ Return a single ad info by specifing it's id counterpart """
     if id in full_info_ids:
         info_idx = full_info_ids.index(id)  # get the id index to return its info counterpart
-        return full_info[info_idx]
+        return full_info[info_idx].strip()  # normalize text by stripping excess whitespace
 
 def get_car_features(full_info, full_info_ids):
     """ Returns a list containig all car features mentioned in the ad """
@@ -45,40 +45,6 @@ def get_car_features(full_info, full_info_ids):
     full_info_ids.remove('إضافات')
     return car_features
 
-
-def make_ad_dict(link_soup, link):
-    """ Returns a dictionary with all the relevant ad info """
-    
-    ad_dict = dict.fromkeys(['Brand', 'Model', 'Governerate', 'City', 'Date', 'Year', 'Kilometers', 'Pay_type',
-                         'Ad_type','Transmission', 'CC', 'Chasis', 'Features', 'Color', 'Price', 'URL', 'imgs'])
-
-    ad_dict['Date'] = get_date(link_soup)
-    ad_dict['Price'] = get_price(link_soup)
-    ad_dict['imgs'] = get_imgs(link_soup)
-    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup) 
-    ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
-    ad_dict['URL'] = link['href']
-
-    ad_info = get_full_ad_info(link_soup)
-    ad_info_ids = get_full_ad_info_ids(link_soup)
-
-    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids) 
-    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids) 
-    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids) 
-    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids) 
-    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids) 
-    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids) 
-    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids) 
-
-    if 'إضافات' in ad_info_ids:
-        ad_dict['Features'] = get_car_features(ad_info, ad_info_ids)
-
-    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids) 
-    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids) 
-    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids) 
-
-    # print("Finished ad dict")
-    return ad_dict
 
 def process_arabic_date(date):
     month_dict = {"يناير": "1",
@@ -142,6 +108,43 @@ def get_imgs(link_soup):
     return imgs
 
 
+def make_ad_dict(link_soup, link):
+    """ Returns a dictionary with all the relevant ad info """
+    
+    ad_dict = dict.fromkeys(['Brand', 'Model', 'Governerate', 'City', 'Date', 'Year', 'Kilometers', 'Pay_type',
+                         'Ad_type','Transmission', 'CC', 'Chasis', 'Features', 'Color', 'Price', 'URL', 'imgs'])
+
+    ad_dict['Date'] = get_date(link_soup)
+    ad_dict['Price'] = get_price(link_soup)
+    ad_dict['imgs'] = get_imgs(link_soup)
+    ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup) 
+    ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
+    ad_dict['URL'] = link['href']
+
+    ad_info = get_full_ad_info(link_soup)
+    ad_info_ids = get_full_ad_info_ids(link_soup)
+
+    ad_dict['CC'] = get_info_from_id('المحرك (سي سي)', ad_info, ad_info_ids) 
+    ad_dict['Year'] = get_info_from_id('السنة', ad_info, ad_info_ids) 
+    ad_dict['Model'] = get_info_from_id('موديل', ad_info, ad_info_ids) 
+    ad_dict['State'] = get_info_from_id('الحالة', ad_info, ad_info_ids) 
+    ad_dict['Pay_type'] = get_info_from_id('طريقة الدفع', ad_info, ad_info_ids) 
+    ad_dict['Kilometers'] = get_info_from_id('كيلومترات', ad_info, ad_info_ids) 
+    ad_dict['Transmission'] = get_info_from_id('ناقل الحركة', ad_info, ad_info_ids) 
+
+    if 'إضافات' in ad_info_ids:
+        ad_dict['Features'] = get_car_features(ad_info, ad_info_ids)
+
+    ad_dict['Color'] = get_info_from_id('اللون', ad_info, ad_info_ids) 
+    ad_dict['Chasis'] = get_info_from_id('نوع الهيكل', ad_info, ad_info_ids) 
+    ad_dict['Ad_type'] = get_info_from_id('نوع الإعلان', ad_info, ad_info_ids) 
+
+
+    # print("Finished ad dict")
+    return ad_dict
+
+
+
 def get_res(url, MAX_RETRIES, headers):
     session = requests.Session()
     adapter = requests.adapters.HTTPAdapter(max_retries=MAX_RETRIES)
@@ -202,31 +205,35 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(1, 501, batch_count):
-            scrape_pages(batch, batch+batch_count, max_retries, headers1, headers2, 5, True)
+        for batch in range(1, 2, batch_count):
+            scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
 
         for ad_dict in all_ad_dicts:
             try:
                 Ad.objects.create(
-                    brand=ad_dict["Brand"].strip(),
-                    model=ad_dict["Model"].strip(),
-                    gov=ad_dict["Governerate"].strip(),
-                    city=ad_dict["City"].strip(),
-                    date=ad_dict["Date"].strip(),
-                    year=ad_dict["Year"].strip(),
-                    kilos=ad_dict["Kilometers"].strip(),
-                    pay_type=ad_dict["Pay_type"].strip(),
-                    transmission=ad_dict["Transmission"].strip(),
-                    cc=ad_dict["CC"].strip(),
-                    chasis=ad_dict["Chasis"].strip(),
-                    features=ad_dict["Features"].strip(),
-                    color=ad_dict["Color"].strip(),
-                    price=ad_dict["Price"].strip(),
-                    url=ad_dict["URL"].strip(),
+                    brand=ad_dict["Brand"],
+                    model=ad_dict["Model"],
+                    gov=ad_dict["Governerate"],
+                    city=ad_dict["City"],
+                    date=ad_dict["Date"],
+                    year=ad_dict["Year"],
+                    kilos=ad_dict["Kilometers"],
+                    pay_type=ad_dict["Pay_type"],
+                    transmission=ad_dict["Transmission"],
+                    cc=ad_dict["CC"],
+                    chasis=ad_dict["Chasis"],
+                    features=ad_dict["Features"],
+                    color=ad_dict["Color"],
+                    price=ad_dict["Price"],
+                    url=ad_dict["URL"],
                     )
                 print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
             except:
                 logging.critical(ad_dict["URL"])
+                for info in ad_dict:
+                    logging.critical(info)
+                    logging.critical(ad_dict[info])
+                    logging.critical(type(ad_dict[info]))
                 print('%s - %s - %s already exists' % ((ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"])))
 
         self.stdout.write('job complete')
