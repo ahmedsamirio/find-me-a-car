@@ -214,7 +214,7 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(1, 10, batch_count):
+        for batch in range(1, 2, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
 
         for ad_dict in all_ad_dicts:
@@ -237,7 +237,7 @@ class Command(BaseCommand):
                         price=ad_dict["Price"],
                         url=ad_dict["URL"],
                         description=ad_dict["Description"],
-                        img_urls= ad_dict["imgs"]
+                        imgs= ad_dict["imgs"]
                         )
                     print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
                 except:
