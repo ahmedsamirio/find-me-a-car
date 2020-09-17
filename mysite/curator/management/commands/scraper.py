@@ -192,7 +192,6 @@ def scrape_pages(startPage, endPage, max_retries, headers, max_threads, ad_sleep
     for page in range(startPage, endPage):
         url = 'https://www.olx.com.eg/vehicles/cars-for-sale/?page={}'.format(page)
         page_res = get_res(url, max_retries, headers)
-        print("got page {} res".format(page))
 
         page_soup = bs4.BeautifulSoup(page_res.text, features="lxml")
         page_links = page_soup.select('.ads__item__ad--title')
@@ -216,7 +215,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for batch in range(1, 501, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
-            self.stdout.write("%d batches completed" % batch)
+            if batch % 25 == 0:
+                self.stdout.write("%d batches completed" % batch)
+                self.stdout.write("%d ads scraped" % len(all_ad_dicts))
 
         ads_created = 0
         for ad_dict in all_ad_dicts:
@@ -253,4 +254,3 @@ class Command(BaseCommand):
         self.stdout.write('%d Ads were scraped' % len(all_ad_dicts))
         self.stdout.write('%d Ads were added' % (ads_created))
         self.stdout.write('job complete')
-        
