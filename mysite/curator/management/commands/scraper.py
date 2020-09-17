@@ -74,12 +74,12 @@ def get_ad_location(link_soup):
     try:
         location = link_soup.select(".show-map-link strong")[0].get_text().strip().split("،")
         if len(location) != 2:
-            location = link_soup.select(".show-map-link strong")[0].get_text().strip().split("،")
+            location = link_soup.select(".show-map-link strong")[0].get_text().strip().split(",")
         return location
     except:
         logging.critical('Error in get_ad_lcation')
         logging.critical(link_soup.select(".show-map-link strong"))
-        return 0
+        return None, None
 
 def get_price(link_soup):
     try:
@@ -213,6 +213,7 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
+        self.stdout.write("Begin Scraping..")
         for batch in range(1, 501, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
             if batch % 25 == 0:
