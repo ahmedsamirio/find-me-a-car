@@ -21,7 +21,7 @@ def get_full_ad_info(link_soup):
 
 def get_full_ad_info_ids(link_soup):
     """ Returns the ad information identifiers (headers) """
-    raw_ids = link_soup.select('th')  # identifiers in soupified html format
+    raw_ids = link_soup.select('.details th')  # identifiers in soupified html format
     processed_ids = [id.get_text() for id in raw_ids]
     return processed_ids
 
@@ -72,13 +72,13 @@ def get_date(link_soup):
 
 def get_ad_location(link_soup):
     try:
-        location = link_soup.select('p span strong')[0].get_text().replace('\t', '').replace('\n', '').split('،')
+        location = link_soup.select(".show-map-link strong")[0].get_text().strip().split("،")
         if len(location) != 2:
-            location = link_soup.select('p span strong')[0].get_text().replace('\t', '').replace('\n', '').split(',')
+            location = link_soup.select(".show-map-link strong")[0].get_text().strip().split("،")
         return location
     except:
         logging.critical('Error in get_ad_lcation')
-        logging.critical(link_soup.select('p span strong'))
+        logging.critical(link_soup.select(".show-map-link strong"))
         return 0
 
 def get_price(link_soup):
@@ -214,9 +214,11 @@ class Command(BaseCommand):
     help = "collect ads"
 
     def handle(self, *args, **options):
-        for batch in range(1, 2, batch_count):
+        for batch in range(1, 501, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
+            self.stdout.write("%d batches completed" % batch)
 
+        ads_created = 0
         for ad_dict in all_ad_dicts:
             if ad_dict["Ad_type"] == "معروض للبيع" and ad_dict["Pay_type"] in ["كاش", "قابل للبدل"]:
                 try:
@@ -239,13 +241,16 @@ class Command(BaseCommand):
                         description=ad_dict["Description"],
                         imgs= ad_dict["imgs"]
                         )
-                    print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
+                    ads_created += 0
+                    # print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
                 except:
-                    for info in ad_dict:
-                        logging.critical(info)
-                        logging.critical(ad_dict[info])
-                        logging.critical(type(ad_dict[info]))
+                    # for info in ad_dict:
+                    #     logging.critical(info)
+                    #     logging.critical(ad_dict[info])
+                    #     logging.critical(type(ad_dict[info]))
                     print("%s - %s - %s couldn't be added" % ((ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"])))
                     logging.critical(ad_dict["URL"])
-
+        self.stdout.write('%d Ads were scraped' % len(all_ad_dicts))
+        self.stdout.write('%d Ads were added' % (ads_created))
         self.stdout.write('job complete')
+        
