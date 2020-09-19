@@ -79,6 +79,7 @@ def replace_arabic(text):
 
 
 def preprocess_queried_ads(ads):
+    ads = ads.drop(columns=["imgs", "description"])  # drop these columns as they don't serve in similarity scores
     specs = load_specs()
     features_index = load_features_index()
     specs_encoder = load_one_hot_encoder(ads, specs)

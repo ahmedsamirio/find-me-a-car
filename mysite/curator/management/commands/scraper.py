@@ -214,9 +214,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Begin Scraping..")
-        for batch in range(1, 501, batch_count):
+        for batch in range(1, 5, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
-            if batch % 25 == 0:
+            if batch % 2 == 0:
                 self.stdout.write("%d batches completed" % batch)
                 self.stdout.write("%d ads scraped" % len(all_ad_dicts))
 
