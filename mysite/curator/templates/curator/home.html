@@ -8,16 +8,18 @@
 		}
 
 		h1 { 
-			flex-grow: 1;
+			/*flex-grow: 1;*/
 			padding-top: 20px;
 			text-align: right;
+			float: left;
 		}
 
 		p {
-			flex-grow: 1;
+			/*flex-grow: 1;*/
 			text-align: center;
 			margin: 5px;
 			padding: 5px;
+			float: left;
 			/*border: solid;*/
 		}
 
@@ -25,14 +27,41 @@
 			text-decoration: none;
 		}
 
+		form {
+			margin-left: 25%;
+			margin-right: 25%;
+			width: 50%;
+		}
 
 
 		.container {
 			border: 2px dotted black;
 			margin: 2px;
-			display: flex;
+			overflow: hidden;
+			flex-grow: 1;
 		}
 
+		.title {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+		}
+
+		.content {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.functions {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.function {
+			width: 50%;
+		}
+			
 		.space {
 			height: 150px;
 		}
@@ -45,33 +74,85 @@
 			border-left: solid 1px;
 		}
 
-		#price-description {
-			width: 480px;
+		#logo-slogan {
+			/*margin-left: 5%;
+			margin-right: 15%*/;
+			width: 80%;
 		}
 
-		#model-description {
-			flex-grow: 1;
-		}
 
 	</style>
 	<title>Home Page</title>
 </head>
 <body>
-	<div class="space">
+	<div class="container space"></div>
+	<div class="container content">
+		<div class="container title">
+			<div id="logo-slogan" class="container title">
+				<h1>Find Me a Car</h1>
+				<p id="header">Your honest online car dealer.</p>
+			</div>
+		</div>
+	<div class="container functions">
+		<div class="container content function">
+			<p>Search for ads by price</p>
+			<form action="price" method="post">
+				<fieldset>
+					{% csrf_token %}
+					{{ price_form.as_table }}
+					<input type="submit" value="Submit">
+				</fieldset>
+			</form>
+		</div>
+		<<div class="container content function">
+			<p>Search for ads by model</p>
+			<form action="model" method="post">
+				<table>
+					{% csrf_token %}
+					{{ model_form.as_table }}
+				</table>
+				<input type="submit" value="Submit">
+			  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+			  <script>
+			    $("#brand").change(function () {
+			      var url = $("#modelForm").attr("data-models-url");  // get the url of the `load_cities` view
+			      var brand = $(this).val();  // get the selected country ID from the HTML input
 
+			      $.ajax({                       // initialize an AJAX request
+			        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+			        data: {
+			          'brand': brand       // add the country id to the GET parameters
+			        },
+			        success: function (data) {   // `data` is the return of the `load_cities` view function
+			          $("#model").html(data);  // replace the contents of the city input with the data that came from the server
+			        }
+			      });
+
+			    });
+			  </script>
+				
+			</form>
+		</div>
 	</div>
-	<div class="container">
-		<h1>Find Me a Car</h1>
-		<p id="header">Your honest online car dealer.</p>
 	</div>
 
-	<div class="container">
-		<p><a href="{% url 'curator:price' %}">Find by price</a></p>
-		<p>Find by model</p>
-	</div>
-	<div class="container">
-		<p id="price-description">Searches for all the car models falling in a price range that you specify.</p>
-		<p id="model-description">Searches for the best deals for a car model that you specify.</p>
+	<!-- <div class="container lower">
+		<div class="container left">
+			<p class="upper"><a href="{% url 'curator:price' %}">Find by price</a></p>
+			<form class="middle" action="price" method="post">
+			<fieldset>
+				<legend>Text input</legend>
+				{% csrf_token %}
+				{{ form.as_p }}
+				<input type="submit" value="Submit">
+			</fieldset>
+		</form>
+			<p class="lower" id="price-description">Searches for all the car models falling in a price range that you specify.</p>
+		</div>
+		<div class="container right">
+			<p class="upper">Find by model</p>
+			<p class="lower" id="model-description">Searches for the best deals for a car model that you specify.</p>
+		</div>
 	</div>
 </body>
-</html>
+</html> -->

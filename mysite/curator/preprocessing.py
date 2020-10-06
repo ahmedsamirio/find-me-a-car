@@ -34,7 +34,7 @@ def check_feature(x, feature):
 def one_hot_encode_features(df, features_index):
     for feature_en, feature_ar in features_index.items():
         df[feature_en] = df.features.apply(lambda x: check_feature(x, feature_ar))
-    return df.iloc[:, 17:]
+    return df.iloc[:, 16:]
 
 
 def load_one_hot_encoder(df, specs):

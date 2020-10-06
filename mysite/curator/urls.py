@@ -8,4 +8,5 @@ urlpatterns = [
     path('price', views.findbyprice, name='price'),
     path('results', views.price_results, name='results'),
     path('model', views.model, name='model'),
+    path('ajax/load-models/', views.load_models, name='ajax_load_models')
 ]
