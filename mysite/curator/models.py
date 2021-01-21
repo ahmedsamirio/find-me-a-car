@@ -29,7 +29,7 @@ class Ad(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
     # year = models.ForeignKey(Year, on_delete=models.CASCADE)  # deprecated
-    year = model.CharField(max_length=200)
+    year = models.CharField(max_length=200)
     gov = models.CharField(max_length=200)
     city = models.CharField(max_length=200)
     date = models.DateField()  
