@@ -2,7 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import connection
 from django.db.models import Avg
-from .models import Ad
+from django.views.generic import ListView, CreateView, UpdateView
+from django.urls import reverse_lazy
+
+from .models import Ad, Model
 from .forms import PriceForm, ModelForm
 
 from sklearn.metrics.pairwise import cosine_similarity
@@ -94,7 +97,17 @@ def model(request):
 
 
 def load_models(request):
-    brand = request.GET.get('brand')
-    models = Ad.objects.filter(brand=brand).values_list('model', flat=True).distinct()
-    return render(request, 'curator/model_dropdown_list.html', {'models': models})
+    brand_id = request.GET.get('brand_id')
+    models = Model.objects.filter(brand_id=brand_id).order_by('name')
+    return render(request, 'curator/models_dropdown_list.html', {'models': models})
     
+
+class AdListView(ListView):
+    model = Ad
+    context_object_name = 'ad'
+
+
+class AdCreateView(CreateView):
+    model = Ad
+    fields = ('brand', 'model', 'year')
+    success_url = reverse_lazy('')

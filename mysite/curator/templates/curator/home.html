@@ -105,33 +105,41 @@
 			</form>
 		</div>
 		<<div class="container content function">
+		{% block content %}
 			<p>Search for ads by model</p>
-			<form action="model" method="post">
+
+			
+
+			<form action="model" method="post" id="modelForm" data-models-url="{% url 'curator:ajax_load_models' %}" novalidate>
+				{% csrf_token %}
 				<table>
-					{% csrf_token %}
 					{{ model_form.as_table }}
 				</table>
 				<input type="submit" value="Submit">
-			  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-			  <script>
-			    $("#brand").change(function () {
-			      var url = $("#modelForm").attr("data-models-url");  // get the url of the `load_cities` view
-			      var brand = $(this).val();  // get the selected country ID from the HTML input
-
-			      $.ajax({                       // initialize an AJAX request
-			        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
-			        data: {
-			          'brand': brand       // add the country id to the GET parameters
-			        },
-			        success: function (data) {   // `data` is the return of the `load_cities` view function
-			          $("#model").html(data);  // replace the contents of the city input with the data that came from the server
-			        }
-			      });
-
-			    });
-			  </script>
-				
 			</form>
+
+
+			<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+			<script>
+			$("#id_brand").change(function () {
+			  var url = $("#modelForm").attr("data-models-url");  // get the url of the `load_models` view
+			  var brandId = $(this).val();  // get the selected brand ID from the HTML input
+
+			  $.ajax({                       // initialize an AJAX request
+			    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+			    data: {
+			      'brand_id': brandId       // add the country id to the GET parameters
+			    },
+			    success: function (data) {   // `data` is the return of the `load_models` view function
+			      $("#id_model").html(data);  // replace the contents of the city input with the data that came from the server
+			    }
+			  });
+
+			});
+			</script>
+		{% endblock %}
+
+			
 		</div>
 	</div>
 	</div>
