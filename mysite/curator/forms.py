@@ -14,7 +14,7 @@ class PriceForm(forms.Form):
 class ModelForm(forms.ModelForm):
     class Meta:
         model = Ad
-        fields = ('brand', 'model', 'year')
+        fields = ('brand', 'model')
 
 
     def __init__(self, *args, **kwargs):

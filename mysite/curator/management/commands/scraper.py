@@ -224,9 +224,20 @@ class Command(BaseCommand):
         for ad_dict in all_ad_dicts:
             if ad_dict["Ad_type"] == "معروض للبيع" and ad_dict["Pay_type"] in ["كاش", "قابل للبدل"]:
                 try:
+                    # Ad creation need to be changed to suit the new data model
+                    if not Brand.objects.filter(name=ad_dict['Brand']).exists():
+                        brand = Brand(name=ad_dict['Brand'])
+                    else:
+                        brand = Brand.objects.filter(name=ad_dict['Brand'])[0]
+
+                    if not Model.objects.filter(name=ad_dict['Model']).exists():
+                        model = Model(name=ad_dict['Model'], brand=brand)
+                    else:
+                        model = Model.objects.filter(name=ad_dict['Model'])[0]
+
                     Ad.objects.create(
-                        brand=ad_dict["Brand"],
-                        model=ad_dict["Model"],
+                        brand=brand,
+                        model=model,
                         gov=ad_dict["Governerate"],
                         city=ad_dict["City"],
                         date=ad_dict["Date"],

@@ -101,13 +101,3 @@ def load_models(request):
     models = Model.objects.filter(brand_id=brand_id).order_by('name')
     return render(request, 'curator/models_dropdown_list.html', {'models': models})
     
-
-class AdListView(ListView):
-    model = Ad
-    context_object_name = 'ad'
-
-
-class AdCreateView(CreateView):
-    model = Ad
-    fields = ('brand', 'model', 'year')
-    success_url = reverse_lazy('')
