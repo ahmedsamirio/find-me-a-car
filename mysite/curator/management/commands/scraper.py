@@ -7,7 +7,7 @@ import numpy as np
 from .config import *
 from datetime import datetime
 from django.core.management.base import BaseCommand
-from curator.models import Ad
+from curator.models import Ad, Brand, Model
 
 
 def get_full_ad_info(link_soup):
@@ -214,7 +214,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Begin Scraping..")
-        for batch in range(1, 5, batch_count):
+        for batch in range(1, 10, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
             if batch % 2 == 0:
                 self.stdout.write("%d batches completed" % batch)
@@ -227,11 +227,13 @@ class Command(BaseCommand):
                     # Ad creation need to be changed to suit the new data model
                     if not Brand.objects.filter(name=ad_dict['Brand']).exists():
                         brand = Brand(name=ad_dict['Brand'])
+                        brand.save()
                     else:
                         brand = Brand.objects.filter(name=ad_dict['Brand'])[0]
 
                     if not Model.objects.filter(name=ad_dict['Model']).exists():
                         model = Model(name=ad_dict['Model'], brand=brand)
+                        model.save()
                     else:
                         model = Model.objects.filter(name=ad_dict['Model'])[0]
 
@@ -254,7 +256,7 @@ class Command(BaseCommand):
                         description=ad_dict["Description"],
                         imgs= ad_dict["imgs"]
                         )
-                    ads_created += 0
+                    ads_created += 1
                     # print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
                 except:
                     # for info in ad_dict:

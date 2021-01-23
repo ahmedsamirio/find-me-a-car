@@ -5,7 +5,7 @@ from django.db.models import Avg
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 
-from .models import Ad, Model
+from .models import Ad, Model, Brand
 from .forms import PriceForm, ModelForm
 
 from sklearn.metrics.pairwise import cosine_similarity
@@ -64,18 +64,27 @@ def price_results(request):
 
 def model(request):
     """View for results"""
-    if request.method == "GET":
-        data = request.GET.copy()
+    if request.method == "POST":
+        data = request.POST.copy()
 
     query = str(Ad.objects.all().query)
     queried_ads = pd.read_sql_query(query, connection)
 
     queried_ads.drop_duplicates(inplace=True)
 
-    mask = (queried_ads.brand == data["brand"]) & (queried_ads.model == data["model"]) & (queried_ads.year == int(data["year"]))
+    # print(data["model"], Model.objects.filter(name=data["model"]))
+    # model_id = Model.objects.filter(name=data["model"])[0].id
+    # brand_id = Brand.objects.filter(name=data["brand"])[0].id
+
+    mask = (queried_ads.brand_id == data['brand']) & (queried_ads.model_id == data['model'])
     queried_ads = queried_ads[mask]
 
-    model = "{}-{}-{}".format(data['brand'], data['model'], data['year'])# stitch up model name to pass to the template  
+    print(data['brand'], data['model'])
+
+    brand = Brand.objects.filter(id=data['brand'])[0].name
+    model = Model.objects.filter(id=data['model'])[0].name
+
+    model = "{}-{}".format(brand, model) # stitch up model name to pass to the template  
 
     sorted_indices = score_queried_ads(queried_ads)
     queried_ads = queried_ads.iloc[sorted_indices]
