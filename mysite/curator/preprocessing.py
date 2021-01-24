@@ -82,6 +82,7 @@ def preprocess_queried_ads(ads):
     ads = ads.drop(columns=["imgs", "description"])  # drop these columns as they don't serve in similarity scores
     specs = load_specs()
     features_index = load_features_index()
+    print('Preprocessing Shape:', ads.shape)
     specs_encoder = load_one_hot_encoder(ads, specs)
     kilometers_index = load_sorted_kilometers_dict()
     ads.kilos = ads.kilos.apply(lambda x: replace_arabic(x))

@@ -14,6 +14,7 @@
 	<table style="width: 100%">
 		<tr>
 			<th>Ad</th>
+			<th>Year</th>
 			<th>Price</th>
 			<th>CC</th>
 			<th>Transmission</th>
@@ -22,21 +23,21 @@
 			<th>{{feature}}</th>
 			{% endfor %}
 		</tr>
-		{% for ad in queried_ads.itertuples %}
+		# implement looping over ads ad their features together
+		{% for ad, ad_features in queried_ads_and_features %}
 		<tr>
-			{% for _, ad_features in ads_features.iterrows %}
 			<td><a href={{ad.url}}>Link</a></td>
+			<td>{{ad.year}}</td>
 			<td>{{ad.price}} EGP</td>
 			<td>{{ad.cc}} CC</td>
 			<td>{{ad.transmission}}</td>
 			<td>{{ad.kilos}} كيلو</td>
-				{% for ad_feature in ad_features %}
-				{% if ad_feature %}
-				<td><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></td>
-				{% else %}
-				<td><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg></td>
-				{% endif %}
-				{% endfor %}
+			{% for ad_feature in ad_features %}
+			{% if ad_feature %}
+			<td><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/></svg></td>
+			{% else %}
+			<td><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg></td>
+			{% endif %}
 			{% endfor %}
 		</tr>
 		{% endfor %}

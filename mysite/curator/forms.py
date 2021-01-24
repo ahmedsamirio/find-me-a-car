@@ -15,6 +15,9 @@ class ModelForm(forms.ModelForm):
     class Meta:
         model = Ad
         fields = ('brand', 'model')
+    
+    min_year = forms.CharField(label="Minimum Year", max_length=5)
+    max_year = forms.CharField(label="Maximum Year", max_length=5)    
 
 
     def __init__(self, *args, **kwargs):

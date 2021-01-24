@@ -70,13 +70,20 @@ def model(request):
     query = str(Ad.objects.all().query)
     queried_ads = pd.read_sql_query(query, connection)
 
+    print('Before Querying Shape:', queried_ads.shape)
+
     queried_ads.drop_duplicates(inplace=True)
 
     # print(data["model"], Model.objects.filter(name=data["model"]))
     # model_id = Model.objects.filter(name=data["model"])[0].id
     # brand_id = Brand.objects.filter(name=data["brand"])[0].id
 
-    mask = (queried_ads.brand_id == data['brand']) & (queried_ads.model_id == data['model'])
+    brand_id = int(data['brand'])
+    model_id = int(data['model'])
+
+    mask = (queried_ads.brand_id == brand_id) & (queried_ads.model_id == model_id) &\
+           (queried_ads.year.astype(int) <= int(data['max_year'])) &\
+           (queried_ads.year.astype(int) >= int(data['min_year']))
     queried_ads = queried_ads[mask]
 
     print(data['brand'], data['model'])
@@ -85,6 +92,8 @@ def model(request):
     model = Model.objects.filter(id=data['model'])[0].name
 
     model = "{}-{}".format(brand, model) # stitch up model name to pass to the template  
+
+    print('Querying Shape:', queried_ads.shape)
 
     sorted_indices = score_queried_ads(queried_ads)
     queried_ads = queried_ads.iloc[sorted_indices]
@@ -98,10 +107,12 @@ def model(request):
         for ad_feature in ad_features:
             print(ad_feature)
         break
+
+    queried_ads_and_features = [(ad, ad_features) for ad, (_, ad_features) in zip(queried_ads.itertuples(), ads_features.iterrows())]
+
     # TODO: find the best ads in a given model query and pass them to the template for rendering
-    return render(request, 'curator/model.html', {'queried_ads': queried_ads,
+    return render(request, 'curator/model.html', {'queried_ads_and_features': queried_ads_and_features,
                                                   'features': features_index,
-                                                  'ads_features': ads_features,
                                                   'model': model})
 
 
