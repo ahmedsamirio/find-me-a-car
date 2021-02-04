@@ -51,10 +51,10 @@ def price_results(request):
         min_price = request.session["min_price"]
     if request.session.has_key("max_price"):
         max_price = request.session["max_price"]
-    queried_models = Ad.objects.values('brand', 'model', 'year').\
-                                        annotate(mean_price=Avg('price')).\
-                                        filter(mean_price__gte=min_price).\
-                                        filter(mean_price__lte=max_price) 
+    queried_models = Ad.objects.all().\
+                        annotate(mean_price=Avg('price')).\
+                        filter(mean_price__gte=min_price).\
+                        filter(mean_price__lte=max_price) 
 
     # TODO: send the queried_models table to the html file
     return render(request, 'curator/results.html', {'queried_models':queried_models,
