@@ -64,9 +64,6 @@ def price_results(request):
 
 def model(request):
     """View for results"""
-    if request.method == "POST":
-        data = request.POST.copy()
-
     query = str(Ad.objects.all().query)
     queried_ads = pd.read_sql_query(query, connection)
 
@@ -74,22 +71,39 @@ def model(request):
 
     queried_ads.drop_duplicates(inplace=True)
 
+
+    if request.method == "POST":
+        data = request.POST.copy()
+        brand_id = int(data['brand'])
+        model_id = int(data['model'])
+
+        mask = (queried_ads.brand_id == brand_id) & (queried_ads.model_id == model_id) &\
+           (queried_ads.year.astype(int) <= int(data['max_year'])) &\
+           (queried_ads.year.astype(int) >= int(data['min_year']))
+
+        brand = Brand.objects.filter(id=data['brand'])[0].name
+        model = Model.objects.filter(id=data['model'])[0].name
+
+    if request.method == "GET":
+        data = request.GET.copy()
+
+        brand_id = Brand.objects.filter(name=data['brand'])[0].id
+        model_id = Model.objects.filter(name=data['model'])[0].id
+
+        mask = (queried_ads.brand_id == brand_id) & (queried_ads.model_id == model_id) &\
+           (queried_ads.year.astype(int) == int(data['year']))
+
+        brand = data['brand']
+        model = data['model']
+    
+
     # print(data["model"], Model.objects.filter(name=data["model"]))
     # model_id = Model.objects.filter(name=data["model"])[0].id
     # brand_id = Brand.objects.filter(name=data["brand"])[0].id
 
-    brand_id = int(data['brand'])
-    model_id = int(data['model'])
-
-    mask = (queried_ads.brand_id == brand_id) & (queried_ads.model_id == model_id) &\
-           (queried_ads.year.astype(int) <= int(data['max_year'])) &\
-           (queried_ads.year.astype(int) >= int(data['min_year']))
+    
     queried_ads = queried_ads[mask]
-
-    print(data['brand'], data['model'])
-
-    brand = Brand.objects.filter(id=data['brand'])[0].name
-    model = Model.objects.filter(id=data['model'])[0].name
+    
 
     model = "{}-{}".format(brand, model) # stitch up model name to pass to the template  
 
