@@ -3,7 +3,18 @@
 Lo2ta is a car ad recommendation enigne deployed on django web app. It recommends the best deals from all the ads available on OLX for any model that you choose. 
 
 ## How To Use
-First you should clone this repo into your local machine, then if change directory to `mysite`. After that run `python manage.py runserver`. If everything is okay you should see `Starting development server at http://127.0.0.1:8000/` somewhere in the output, and then you can access the web app using the link.
+First you should clone this repo into your local machine, then if change directory to `mysite`. After that run `python manage.py runserver`. If everything is okay you should see
+```
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+August 14, 2021 - 05:55:17
+Django version 2.2.5, using settings 'mysite.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+```
+in the output, and then you can access the web app using the link.
 
 In the homepage you'll see two forms:
 1. One is for searching all models that have ads falling in a price range that you specifiy
