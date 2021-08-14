@@ -41,7 +41,7 @@ class Ad(models.Model):
     features = models.CharField(max_length=500, blank=True, null=True)
     color = models.CharField(max_length=200, blank=True, null=True)
     price = models.IntegerField()
-    url = models.URLField()
+    url = models.URLField(unique=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     imgs = models.CharField(max_length=2000, blank=True, null=True)
 
@@ -49,6 +49,7 @@ class Ad(models.Model):
         return '{} - {} - {}'.format(self.brand,
                                     self.model,
                                     self.year)
+
 
 
 

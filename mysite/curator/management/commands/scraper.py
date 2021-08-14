@@ -81,7 +81,7 @@ def get_ad_location(link_soup):
         logging.critical(link_soup.select(".show-map-link strong"))
         return None, None
 
-def get_price(link_soup):
+def get_price(link_soup, link):
     try:
         price = link_soup.select('div .pricelabel strong')[0].get_text()
         price = re.search('\d*,\d*', price).group().replace(',','')
@@ -92,12 +92,17 @@ def get_price(link_soup):
         except:
             logging.critical('Error in get_price.')
             logging.critical(link_soup.select('div .pricelabel strong'))
+            logging.critical(link['href'])
             return 0
     return price
 
 def get_brand(link_soup, city): 
-    brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '') 
-    return brand.strip()  # normalize text by stripping excess whitepsace
+    try:
+        brand = link_soup.select('td.middle span')[-1].get_text().replace(city, '') 
+        return brand.strip()  # normalize text by stripping excess whitepsace
+    except:
+        logging.critical('Error in get_brand.')
+        return 0
 
 
 def get_imgs(link_soup):
@@ -121,7 +126,7 @@ def make_ad_dict(link_soup, link):
                          'Description'])
 
     ad_dict['Date'] = get_date(link_soup)
-    ad_dict['Price'] = get_price(link_soup)
+    ad_dict['Price'] = get_price(link_soup, link)
     ad_dict['imgs'] = get_imgs(link_soup)
     ad_dict['City'], ad_dict['Governerate'] = get_ad_location(link_soup) 
     ad_dict['Brand'] = get_brand(link_soup, ad_dict['City'])
@@ -176,10 +181,15 @@ def scrape_ad(link, headers, sem, sleep=False):
         if np.random.random_sample() < 0.5:
             time.sleep(1)
 
+    print(link['href'])
     link_res = get_res(link['href'], max_retries, headers)
-    link_soup = bs4.BeautifulSoup(link_res.text, features="lxml")
-    ad_dict = make_ad_dict(link_soup, link)
-    all_ad_dicts.append(ad_dict)
+    if link_res.status_code == 200:
+        link_soup = bs4.BeautifulSoup(link_res.text, features="lxml")
+        try:
+            ad_dict = make_ad_dict(link_soup, link)
+            all_ad_dicts.append(ad_dict)
+        except:
+            print(link['href'], "doesn't exist anymore")
     
     sem.release()
     
@@ -204,7 +214,7 @@ def scrape_pages(startPage, endPage, max_retries, headers, max_threads, ad_sleep
             
             n_cars+=1
         n_pages+=1
-               
+    
     for i, thread in enumerate(scraping_threads):
         thread.join()
 
@@ -214,9 +224,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("Begin Scraping..")
-        for batch in range(1, 10, batch_count):
+        for batch in range(1, 500, batch_count):
             scrape_pages(batch, batch+batch_count, max_retries, headers, 5, True)
-            if batch % 2 == 0:
+            if batch % 10 == 0:
                 self.stdout.write("%d batches completed" % batch)
                 self.stdout.write("%d ads scraped" % len(all_ad_dicts))
 
@@ -257,7 +267,7 @@ class Command(BaseCommand):
                         imgs= ad_dict["imgs"]
                         )
                     ads_created += 1
-                    # print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
+                    print('%s - %s - %s added' % (ad_dict["Brand"], ad_dict["Model"], ad_dict["Year"]))
                 except:
                     # for info in ad_dict:
                     #     logging.critical(info)

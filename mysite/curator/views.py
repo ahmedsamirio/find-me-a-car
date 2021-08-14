@@ -69,7 +69,7 @@ def model(request):
 
     print('Before Querying Shape:', queried_ads.shape)
 
-    queried_ads.drop_duplicates(inplace=True)
+    queried_ads.drop_duplicates(subset=['url'], inplace=True)
 
 
     if request.method == "POST":
