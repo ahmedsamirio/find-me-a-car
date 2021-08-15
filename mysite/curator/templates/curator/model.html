@@ -1,4 +1,7 @@
+<!doctype html>
+<html lang="en">
 <head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<style type="text/css">
 		th, tr, td {
         	border: 1px solid black;
@@ -11,7 +14,23 @@
 </head>
 <body>
 	<h1> Best ads for {{ model }} </h1>
-	<table style="width: 100%">
+	<div class="container">
+		{% for ad, ad_features in queried_ads_and_features %}
+			<div class="row" style="margin-top:5px">
+				<div class="col">
+					<div class="card text-center">
+						<img class="card-img-left" src="..." alt="Card image cap">
+						<h5 class="card-title">Card title</h5>
+						<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+						<p class="card-text">Some quick example text to build on the card title and make up the bulk of the cards's content.</p>
+						<a href="#" class="card-link">Card link</a>
+						<a href="#" class="card-link">Another link</a>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+<!-- 	<table style="width: 100%">
 		<tr>
 			<th>Ad</th>
 			<th>Year</th>
@@ -40,10 +59,8 @@
 			{% endfor %}
 		</tr>
 		{% endfor %}
-	</table>
-	<!-- <ul>
-	{% for ad in queried_ads.itertuples %}
-		<li> {{ad.url}} - {{ ad.price }} </li>
-	{% endfor %} -->
-	</ul>
+	</table> -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
