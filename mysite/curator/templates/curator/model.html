@@ -10,21 +10,46 @@
         tr {
         	text-align: center;
         }
+
+		.card {
+		  flex-direction: row;
+		  align-items: center;
+		}
+		.card img {
+		  width: 30%;
+		}
 	</style>
 </head>
 <body>
-	<h1> Best ads for {{ model }} </h1>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">LO2TA</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+  			  <span class="navbar-toggler-icon"></span>
+ 		 </button>
+ 		 <div class="collapse navbar-collapse" id="navbarNavDropdown">
+ 		 	<div class="navbar-nav">
+ 		 		<a class="nav-link" href="../">Home <span class="sr-only">(current)</span></a>
+ 		 		<a class="nav-link" href="https://github.com/ahmedsamirio">Github</a>
+ 		 		<a class="nav-link" href="https://ahmedsamirio.github.io/">Portfolio</a>
+ 		 	</div>
+ 		 </div>
+	</nav>
+	<h1 class="text-center">{{ model }} </h1>
 	<div class="container">
-		{% for ad, ad_features in queried_ads_and_features %}
+		{% for ad, features_str, ad_features, img in queried_ads_and_features %}
 			<div class="row" style="margin-top:5px">
 				<div class="col">
 					<div class="card text-center">
-						<img class="card-img-left" src="..." alt="Card image cap">
-						<h5 class="card-title">Card title</h5>
-						<h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-						<p class="card-text">Some quick example text to build on the card title and make up the bulk of the cards's content.</p>
-						<a href="#" class="card-link">Card link</a>
-						<a href="#" class="card-link">Another link</a>
+						<img src="{{ img }}" alt="Card image cap">
+						<div class="card-body">
+							<h5 class="card-title">{{ ad.price }} EGP</h5>
+							<h6 class="card-subtitle mb-2 text-muted">{{ ad.kilos }} كم</h6>
+							<h6 class="card-subtitle mb-2 text-muted">{{ ad.gov }} - {{ ad.city }}</h6>
+							<p class="card-text">{{ ad.description }}</p>
+							<p class="card-text">{{ features_str }}</p>
+							<a href={{ ad.url }} class="card-link">{{ ad.url }}</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -42,7 +67,7 @@
 			<th>{{feature}}</th>
 			{% endfor %}
 		</tr>
-		{% for ad, ad_features in queried_ads_and_features %}
+		{% for ad, features_str, ad_features, img in queried_ads_and_features %}
 		<tr>
 			<td><a href={{ad.url}}>Link</a></td>
 			<td>{{ad.year}}</td>

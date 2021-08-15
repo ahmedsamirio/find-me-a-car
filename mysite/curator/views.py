@@ -51,10 +51,30 @@ def price_results(request):
         min_price = request.session["min_price"]
     if request.session.has_key("max_price"):
         max_price = request.session["max_price"]
-    queried_models = Ad.objects.all().\
-                        annotate(mean_price=Avg('price')).\
-                        filter(mean_price__gte=min_price).\
-                        filter(mean_price__lte=max_price) 
+
+
+    query = str(Ad.objects.all().query)
+    queried_ads = pd.read_sql_query(query, connection)
+    queried_ads.drop_duplicates(subset=['url'], inplace=True)
+
+    mean_prices = queried_ads.groupby(["brand_id", "model_id", "year"]).price.median().reset_index(name="price")
+    mean_prices = mean_prices.sort_values(by="year", ascending=False)
+
+    # filter mean_prices 
+    mask = (mean_prices.price >= float(min_price)) & (mean_prices.price <= float(max_price))
+    mean_prices = mean_prices[mask]
+
+    brands = Brand.objects.all()
+    models = Model.objects.all()
+
+    queried_models = []
+    for x in mean_prices.itertuples():
+        brand = brands.get(id=x.brand_id)
+        model = models.get(id=x.model_id)
+        queried_models.append({"brand": brand,
+                               "model": model,
+                               "year": x.year,
+                               "price": x.price})
 
     # TODO: send the queried_models table to the html file
     return render(request, 'curator/results.html', {'queried_models':queried_models,
@@ -122,7 +142,15 @@ def model(request):
             print(ad_feature)
         break
 
-    queried_ads_and_features = [(ad, ad_features) for ad, (_, ad_features) in zip(queried_ads.itertuples(), ads_features.iterrows())]
+    # concat each ad feature into str for card showcase
+    ads_features_str = []
+    for ad in queried_ads.itertuples():
+        try:
+            ads_features_str.append(' - '.join(eval(ad.features)))
+        except TypeError:
+            ads_features_str.append('')
+
+    queried_ads_and_features = [(ad, features_str, ad_features, eval(imgs)[0]) for ad, (_, ad_features), imgs, features_str in zip(queried_ads.itertuples(), ads_features.iterrows(), queried_ads.imgs, ads_features_str)]
 
     # TODO: find the best ads in a given model query and pass them to the template for rendering
     return render(request, 'curator/model.html', {'queried_ads_and_features': queried_ads_and_features,

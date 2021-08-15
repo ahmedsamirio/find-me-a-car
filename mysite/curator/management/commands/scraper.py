@@ -1,4 +1,3 @@
-from tqdm import tqdm_notebook as tqdm
 import re, requests, bs4, logging, threading, time, random
 import pandas as pd
 import numpy as np
